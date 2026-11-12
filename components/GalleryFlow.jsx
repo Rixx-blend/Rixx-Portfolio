@@ -8,7 +8,6 @@ const BASE_SPEED = 18;
 const HOVER_SPEED = 2;
 const SMOOTHING = 2.5;
 const CLOSE_DELAY = 320;
-const WHEEL_GAIN = 1.6; // sensibilité de la molette
 
 // Aspect visuel de chaque carte, en cycle pour alterner rythme et inclinaison
 const CARD_WIDTHS = [190, 230, 200, 250, 180, 220];
@@ -21,14 +20,12 @@ const canHover = () =>
   window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
 export default function GalleryFlow({ photos }) {
-  const rootRef = useRef(null);
   const viewportRef = useRef(null);
   const setRef = useRef(null);
   const offsetRef = useRef(0);
   const speedRef = useRef(BASE_SPEED);
   const hoverCountRef = useRef(0);
   const pausedRef = useRef(false);
-  const touchXRef = useRef(null);
 
   const [lightbox, setLightbox] = useState(null);
   const [closing, setClosing] = useState(false);
@@ -56,48 +53,12 @@ export default function GalleryFlow({ photos }) {
       const k = 1 - Math.exp(-dt * SMOOTHING);
       speedRef.current += (target - speedRef.current) * k;
 
-      if (!still && !pausedRef.current) advance(speedRef.current * dt);
+      if (!still && !pausedRef.current) advance(-speedRef.current * dt); // gauche → droite
       raf = requestAnimationFrame(tick);
     };
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [advance]);
-
-  // Défilement manuel : molette (verticale ou horizontale) et glissement tactile
-  useEffect(() => {
-    const el = rootRef.current;
-    if (!el) return;
-
-    const onWheel = (e) => {
-      e.preventDefault();
-      if (!pausedRef.current) advance((e.deltaX || e.deltaY) * WHEEL_GAIN);
-    };
-    const onTouchStart = (e) => {
-      touchXRef.current = e.touches[0].clientX;
-    };
-    const onTouchMove = (e) => {
-      const x = e.touches[0].clientX;
-      if (touchXRef.current !== null && !pausedRef.current) {
-        advance(touchXRef.current - x);
-      }
-      touchXRef.current = x;
-      e.preventDefault();
-    };
-    const onTouchEnd = () => {
-      touchXRef.current = null;
-    };
-
-    el.addEventListener("wheel", onWheel, { passive: false });
-    el.addEventListener("touchstart", onTouchStart, { passive: true });
-    el.addEventListener("touchmove", onTouchMove, { passive: false });
-    el.addEventListener("touchend", onTouchEnd);
-    return () => {
-      el.removeEventListener("wheel", onWheel);
-      el.removeEventListener("touchstart", onTouchStart);
-      el.removeEventListener("touchmove", onTouchMove);
-      el.removeEventListener("touchend", onTouchEnd);
-    };
   }, [advance]);
 
   const close = useCallback(() => {
@@ -145,7 +106,7 @@ export default function GalleryFlow({ photos }) {
   const total = String(photos.length).padStart(2, "0");
 
   return (
-    <div className="gf-root" ref={rootRef}>
+    <div className="gf-root">
       <img className="gf-camera" src="/lumix-tz99.png" alt="Lumix TZ99" draggable={false} />
       <div className="gf-viewport" ref={viewportRef}>
         <div className="gf-track">

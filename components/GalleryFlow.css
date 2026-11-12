@@ -2,13 +2,11 @@
   --gf-bg: #ecebe7;
   --gf-ink: #1a1a1a;
   --gf-muted: #9a9a95;
-  position: fixed;
-  inset: 0;
+  position: relative;
+  height: 100vh;
   background: var(--gf-bg);
   color: var(--gf-ink);
   overflow: hidden;
-  overscroll-behavior: none;
-  touch-action: none;
 }
 
 .gf-viewport {
@@ -210,4 +208,33 @@
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* Section suivante, située sous la galerie : la page défile jusqu'ici */
+.gf-contact {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10vh 24px;
+  background: #f7f6f3;
+  color: var(--gf-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  text-align: center;
+}
+
+.gf-contact h2 {
+  font-style: italic;
+  font-weight: normal;
+  font-size: clamp(28px, 4vw, 48px);
+  margin: 0 0 18px;
+}
+
+.gf-contact p {
+  font: 11px/1.6 Helvetica, Arial, sans-serif;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gf-muted);
+  margin: 0;
 }

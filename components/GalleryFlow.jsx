@@ -8,6 +8,7 @@ const BASE_SPEED = 18;
 const HOVER_SPEED = 2;
 const SMOOTHING = 2.5;
 const CLOSE_DELAY = 320;
+const WHEEL_GAIN = 1.6; // sensibilité de la molette
 
 // Aspect visuel de chaque carte, en cycle pour alterner rythme et inclinaison
 const CARD_WIDTHS = [190, 230, 200, 250, 180, 220];
@@ -20,6 +21,7 @@ const canHover = () =>
   window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
 export default function GalleryFlow({ photos }) {
+  const rootRef = useRef(null);
   const viewportRef = useRef(null);
   const setRef = useRef(null);
   const offsetRef = useRef(0);
@@ -64,12 +66,12 @@ export default function GalleryFlow({ photos }) {
 
   // Défilement manuel : molette (verticale ou horizontale) et glissement tactile
   useEffect(() => {
-    const el = viewportRef.current;
+    const el = rootRef.current;
     if (!el) return;
 
     const onWheel = (e) => {
       e.preventDefault();
-      if (!pausedRef.current) advance(e.deltaX || e.deltaY);
+      if (!pausedRef.current) advance((e.deltaX || e.deltaY) * WHEEL_GAIN);
     };
     const onTouchStart = (e) => {
       touchXRef.current = e.touches[0].clientX;
@@ -143,7 +145,8 @@ export default function GalleryFlow({ photos }) {
   const total = String(photos.length).padStart(2, "0");
 
   return (
-    <div className="gf-root">
+    <div className="gf-root" ref={rootRef}>
+      <img className="gf-camera" src="/lumix-tz99.svg" alt="Lumix TZ99" draggable={false} />
       <div className="gf-viewport" ref={viewportRef}>
         <div className="gf-track">
           {[0, 1].map((copy) => (

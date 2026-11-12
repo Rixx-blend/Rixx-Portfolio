@@ -45,8 +45,8 @@
   left: 3vw;
   top: 50%;
   transform: translateY(-50%);
-  width: 21vw;
-  max-width: 300px;
+  width: 15vw;
+  max-width: 220px;
   height: auto;
   z-index: 1;
   pointer-events: none;
@@ -198,7 +198,7 @@
 @media (max-width: 640px) {
   .gf-viewport { left: 36vw; }
   .gf-set { gap: 18px; padding-right: 18px; }
-  .gf-camera { width: 30vw; left: 2vw; max-width: none; }
+  .gf-camera { width: 24vw; left: 2vw; max-width: none; }
   .gf-card { transform-origin: center; }
   .gf-footer { left: 16px; right: 16px; font-size: 9px; letter-spacing: 0.16em; }
   .gf-footer span:last-child { display: none; }

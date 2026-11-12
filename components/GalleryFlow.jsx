@@ -20,7 +20,7 @@ const canHover = () =>
   window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
 export default function GalleryFlow({ photos }) {
-  const viewportRef = useRef(null);
+  const trackRef = useRef(null);
   const setRef = useRef(null);
   const offsetRef = useRef(0);
   const speedRef = useRef(BASE_SPEED);
@@ -34,8 +34,8 @@ export default function GalleryFlow({ photos }) {
   const advance = useCallback((delta) => {
     const w = setRef.current?.offsetWidth || 1;
     offsetRef.current = (((offsetRef.current + delta) % w) + w) % w;
-    if (viewportRef.current) {
-      viewportRef.current.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
+    if (trackRef.current) {
+      trackRef.current.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
     }
   }, []);
 
@@ -108,8 +108,8 @@ export default function GalleryFlow({ photos }) {
   return (
     <div className="gf-root">
       <img className="gf-camera" src="/lumix-tz99.png" alt="Lumix TZ99" draggable={false} />
-      <div className="gf-viewport" ref={viewportRef}>
-        <div className="gf-track">
+      <div className="gf-viewport">
+        <div className="gf-track" ref={trackRef}>
           {[0, 1].map((copy) => (
             <div
               key={copy}

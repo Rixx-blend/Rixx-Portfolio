@@ -13,7 +13,9 @@
   position: absolute;
   top: 0;
   bottom: 56px;
-  left: 0;
+  left: 28vw;
+  right: 0;
+  overflow: hidden;
   will-change: transform;
 }
 
@@ -22,25 +24,29 @@
   top: 0;
   bottom: 0;
   left: 0;
+  display: flex;
+  flex-direction: row;
 }
 
 .gf-set {
   position: relative;
+  flex: 0 0 auto;
+  width: max-content;
   display: flex;
   align-items: center;
   height: 100%;
-  padding-left: 30vw;
   gap: 28px;
+  padding-right: 28px; /* = gap : boucle sans couture */
 }
 
 /* Appareil photo à gauche, au-dessus du flux */
 .gf-camera {
   position: absolute;
-  left: -4vw;
+  left: 3vw;
   top: 50%;
   transform: translateY(-50%);
-  width: 34vw;
-  max-width: 480px;
+  width: 21vw;
+  max-width: 300px;
   height: auto;
   z-index: 1;
   pointer-events: none;
@@ -190,8 +196,9 @@
 
 /* Mobile : cartes plus petites, sans effets de survol */
 @media (max-width: 640px) {
-  .gf-set { gap: 18px; padding-left: 30vw; }
-  .gf-camera { width: 46vw; left: -10vw; }
+  .gf-viewport { left: 36vw; }
+  .gf-set { gap: 18px; padding-right: 18px; }
+  .gf-camera { width: 30vw; left: 2vw; max-width: none; }
   .gf-card { transform-origin: center; }
   .gf-footer { left: 16px; right: 16px; font-size: 9px; letter-spacing: 0.16em; }
   .gf-footer span:last-child { display: none; }

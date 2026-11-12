@@ -1,50 +1,57 @@
 .gf-root {
-  --gf-bg: #f3f2ef;
-  --gf-fg: #111;
-  --gf-muted: #8a8a85;
+  --gf-bg: #ecebe7;
+  --gf-ink: #1a1a1a;
+  --gf-muted: #9a9a95;
   position: fixed;
   inset: 0;
   background: var(--gf-bg);
-  color: var(--gf-fg);
+  color: var(--gf-ink);
   overflow: hidden;
   overscroll-behavior: none;
   touch-action: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  .gf-root {
-    --gf-bg: #0d0d0d;
-    --gf-fg: #ecebe8;
-    --gf-muted: #6d6d69;
-  }
-}
-
 .gf-viewport {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 56px;
+  left: 0;
   will-change: transform;
 }
 
 .gf-track {
   position: absolute;
-  left: 0;
-  right: 0;
   top: 0;
+  bottom: 0;
+  left: 0;
 }
 
 .gf-set {
   position: relative;
-  padding: 18vh 0;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-left: 12vw;
+  gap: 28px;
 }
 
-.gf-item {
-  margin: 0 0 22vh;
-  position: relative;
-  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+/* Carte type Polaroid : cadre blanc, ombre douce, légende en bas */
+.gf-card {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 12px 12px 14px;
+  background: #fbfbf9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 10px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.9s ease;
   cursor: zoom-in;
 }
 
-.gf-item img {
+.gf-photo {
+  overflow: hidden;
+  background: #222;
+}
+
+.gf-photo img {
   display: block;
   width: 100%;
   height: auto;
@@ -53,26 +60,52 @@
   -webkit-user-drag: none;
 }
 
-.gf-num {
-  position: absolute;
-  left: 0;
-  bottom: -1.6em;
-  font: 11px/1 Georgia, "Times New Roman", serif;
-  letter-spacing: 0.12em;
-  color: var(--gf-muted);
-  opacity: 0;
-  transition: opacity 0.6s ease;
-  pointer-events: none;
+.gf-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 12px;
+  padding: 0 2px;
+  gap: 8px;
 }
 
-/* Survol et agrandissement uniquement sur les appareils à souris */
+.gf-title {
+  font: italic 15px/1.2 Georgia, "Times New Roman", serif;
+  color: #555;
+}
+
+.gf-place {
+  font: 10px/1 Helvetica, Arial, sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gf-muted);
+  white-space: nowrap;
+}
+
+/* Survol : léger agrandissement, redressement et ombre plus marquée */
 @media (hover: hover) and (pointer: fine) {
-  .gf-item:hover {
-    transform: scale(1.025);
+  .gf-card:hover {
+    transform: translateY(-6px) rotate(0deg) scale(1.04) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 18px 36px rgba(0, 0, 0, 0.12);
+    z-index: 2;
   }
-  .gf-item:hover .gf-num {
-    opacity: 1;
-  }
+}
+
+.gf-footer {
+  position: absolute;
+  left: 34px;
+  right: 34px;
+  bottom: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  font: 10px/1 Helvetica, Arial, sans-serif;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gf-muted);
+  pointer-events: none;
 }
 
 /* Visionneuse */
@@ -83,7 +116,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.88);
+  background: rgba(0, 0, 0, 0.86);
   animation: gf-fade-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
@@ -92,8 +125,8 @@
 }
 
 .gf-lightbox-img {
-  max-width: 92vw;
-  max-height: 90vh;
+  max-width: 90vw;
+  max-height: 86vh;
   object-fit: contain;
   filter: grayscale(1);
   animation: gf-zoom-in 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -130,9 +163,11 @@
   bottom: 18px;
   left: 50%;
   transform: translateX(-50%);
-  font: 11px/1 Georgia, "Times New Roman", serif;
-  letter-spacing: 0.14em;
+  font: 10px/1 Helvetica, Arial, sans-serif;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   color: #bbb;
+  white-space: nowrap;
 }
 
 @keyframes gf-fade-in  { from { opacity: 0; } to { opacity: 1; } }
@@ -140,10 +175,17 @@
 @keyframes gf-zoom-in  { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
 @keyframes gf-zoom-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.96); } }
 
+/* Mobile : cartes plus petites, sans effets de survol */
+@media (max-width: 640px) {
+  .gf-set { gap: 18px; padding-left: 8vw; }
+  .gf-card { transform-origin: center; }
+  .gf-footer { left: 16px; right: 16px; font-size: 9px; letter-spacing: 0.16em; }
+  .gf-footer span:last-child { display: none; }
+}
+
 /* Respect des préférences d'accessibilité */
 @media (prefers-reduced-motion: reduce) {
-  .gf-item,
-  .gf-num,
+  .gf-card,
   .gf-nav,
   .gf-lightbox,
   .gf-lightbox-img,

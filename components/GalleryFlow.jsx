@@ -1,16 +1,18 @@
 "use client";
+
 import { useEffect, useRef, useState, useCallback } from "react";
 import "./GalleryFlow.css";
 
 // Réglages du flux (px par seconde)
-const BASE_SPEED = 34;   // vitesse de défilement normale
-const HOVER_SPEED = 5;   // vitesse lorsqu'une photo est survolée
-const SMOOTHING = 2.5;   // vitesse de transition entre les deux régimes
-const CLOSE_DELAY = 320; // durée de la fermeture de la visionneuse (ms)
+const BASE_SPEED = 18;
+const HOVER_SPEED = 2;
+const SMOOTHING = 2.5;
+const CLOSE_DELAY = 320;
 
-// Largeur (%) et décalage horizontal (%) pour alterner les tailles et les positions
-const SIZES = [44, 70, 56, 86, 38, 62, 50, 78];
-const OFFSETS = [6, 40, 18, 52, 2, 34, 22, 46];
+// Aspect visuel de chaque carte, en cycle pour alterner rythme et inclinaison
+const CARD_WIDTHS = [190, 230, 200, 250, 180, 220];
+const TILTS = [-2.5, 1.5, -1, 2, -1.5, 1];
+const LIFTS = [0, 18, -10, 24, 6, -16];
 
 const reducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -20,21 +22,21 @@ const canHover = () =>
 export default function GalleryFlow({ photos }) {
   const viewportRef = useRef(null);
   const setRef = useRef(null);
-  const offsetRef = useRef(0);       // position dans le flux, en px
+  const offsetRef = useRef(0);
   const speedRef = useRef(BASE_SPEED);
-  const hoverCountRef = useRef(0);   // nombre de photos survolées
-  const pausedRef = useRef(false);   // true quand la visionneuse est ouverte
-  const touchYRef = useRef(null);
+  const hoverCountRef = useRef(0);
+  const pausedRef = useRef(false);
+  const touchXRef = useRef(null);
 
-  const [lightbox, setLightbox] = useState(null); // index de la photo ouverte
+  const [lightbox, setLightbox] = useState(null);
   const [closing, setClosing] = useState(false);
 
-  // Déplace le flux de `delta` px en bouclant sur la hauteur d'une série
+  // Décale le flux horizontalement, en bouclant sur la largeur d'une série
   const advance = useCallback((delta) => {
-    const h = setRef.current?.offsetHeight || 1;
-    offsetRef.current = (((offsetRef.current + delta) % h) + h) % h;
+    const w = setRef.current?.offsetWidth || 1;
+    offsetRef.current = (((offsetRef.current + delta) % w) + w) % w;
     if (viewportRef.current) {
-      viewportRef.current.style.transform = `translate3d(0, ${-offsetRef.current}px, 0)`;
+      viewportRef.current.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
     }
   }, []);
 
@@ -60,28 +62,28 @@ export default function GalleryFlow({ photos }) {
     return () => cancelAnimationFrame(raf);
   }, [advance]);
 
-  // Défilement manuel : molette et glissement tactile, sans conflit avec le flux
+  // Défilement manuel : molette (verticale ou horizontale) et glissement tactile
   useEffect(() => {
     const el = viewportRef.current;
     if (!el) return;
 
     const onWheel = (e) => {
       e.preventDefault();
-      if (!pausedRef.current) advance(e.deltaY);
+      if (!pausedRef.current) advance(e.deltaX || e.deltaY);
     };
     const onTouchStart = (e) => {
-      touchYRef.current = e.touches[0].clientY;
+      touchXRef.current = e.touches[0].clientX;
     };
     const onTouchMove = (e) => {
-      const y = e.touches[0].clientY;
-      if (touchYRef.current !== null && !pausedRef.current) {
-        advance(touchYRef.current - y);
+      const x = e.touches[0].clientX;
+      if (touchXRef.current !== null && !pausedRef.current) {
+        advance(touchXRef.current - x);
       }
-      touchYRef.current = y;
+      touchXRef.current = x;
       e.preventDefault();
     };
     const onTouchEnd = () => {
-      touchYRef.current = null;
+      touchXRef.current = null;
     };
 
     el.addEventListener("wheel", onWheel, { passive: false });
@@ -96,7 +98,6 @@ export default function GalleryFlow({ photos }) {
     };
   }, [advance]);
 
-  // Fermeture avec une animation de sortie
   const close = useCallback(() => {
     setClosing(true);
     setTimeout(() => {
@@ -112,7 +113,7 @@ export default function GalleryFlow({ photos }) {
     [photos.length]
   );
 
-  // Visionneuse : mise en pause du flux, clavier, verrouillage du scroll de page
+  // Visionneuse : pause du flux, clavier, verrouillage du scroll de page
   useEffect(() => {
     pausedRef.current = lightbox !== null;
     if (lightbox === null) return;
@@ -139,11 +140,12 @@ export default function GalleryFlow({ photos }) {
     if (canHover()) hoverCountRef.current = Math.max(0, hoverCountRef.current - 1);
   };
 
+  const total = String(photos.length).padStart(2, "0");
+
   return (
     <div className="gf-root">
       <div className="gf-viewport" ref={viewportRef}>
         <div className="gf-track">
-          {/* Deux séries identiques : la boucle est invisible */}
           {[0, 1].map((copy) => (
             <div
               key={copy}
@@ -152,27 +154,32 @@ export default function GalleryFlow({ photos }) {
               aria-hidden={copy === 1}
             >
               {photos.map((photo, i) => {
-                const s = i % SIZES.length;
+                const s = i % CARD_WIDTHS.length;
                 return (
                   <figure
                     key={`${copy}-${photo.id ?? i}`}
-                    className="gf-item"
+                    className="gf-card"
                     style={{
-                      width: `${SIZES[s]}%`,
-                      marginLeft: `${OFFSETS[s]}%`,
+                      width: `${CARD_WIDTHS[s]}px`,
+                      transform: `translateY(${LIFTS[s]}px) rotate(${TILTS[s]}deg)`,
                     }}
                     onMouseEnter={enter}
                     onMouseLeave={leave}
                     onClick={() => copy === 0 && setLightbox(i)}
                   >
-                    <img
-                      src={photo.src}
-                      alt={photo.alt ?? ""}
-                      loading="lazy"
-                      decoding="async"
-                      draggable={false}
-                    />
-                    <span className="gf-num">{String(i + 1).padStart(3, "0")}</span>
+                    <div className="gf-photo">
+                      <img
+                        src={photo.src}
+                        alt={photo.alt ?? ""}
+                        loading="lazy"
+                        decoding="async"
+                        draggable={false}
+                      />
+                    </div>
+                    <figcaption className="gf-caption">
+                      <span className="gf-title">{photo.title ?? ""}</span>
+                      <span className="gf-place">{photo.place ?? ""}</span>
+                    </figcaption>
                   </figure>
                 );
               })}
@@ -180,6 +187,13 @@ export default function GalleryFlow({ photos }) {
           ))}
         </div>
       </div>
+
+      <footer className="gf-footer">
+        <span>
+          {String(1).padStart(2, "0")} — {total} &nbsp;&nbsp;&nbsp; FLUX CONTINU · NOIR &amp; BLANC
+        </span>
+        <span>SURVOLEZ POUR RALENTIR · CLIQUEZ POUR AGRANDIR</span>
+      </footer>
 
       {lightbox !== null && (
         <div
@@ -201,7 +215,8 @@ export default function GalleryFlow({ photos }) {
             ›
           </button>
           <span className="gf-counter">
-            {String(lightbox + 1).padStart(3, "0")} / {String(photos.length).padStart(3, "0")}
+            {String(lightbox + 1).padStart(2, "0")} / {total}
+            {photos[lightbox].title ? ` — ${photos[lightbox].title}` : ""}
           </span>
         </div>
       )}

@@ -146,7 +146,7 @@ export default function GalleryFlow({ photos }) {
 
   return (
     <div className="gf-root" ref={rootRef}>
-      <img className="gf-camera" src="/lumix-tz99.svg" alt="Lumix TZ99" draggable={false} />
+      <img className="gf-camera" src="/lumix-tz99.png" alt="Lumix TZ99" draggable={false} />
       <div className="gf-viewport" ref={viewportRef}>
         <div className="gf-track">
           {[0, 1].map((copy) => (

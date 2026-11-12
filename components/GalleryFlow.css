@@ -47,6 +47,7 @@
   z-index: 1;
   pointer-events: none;
   user-select: none;
+  mix-blend-mode: multiply;
 }
 
 /* Carte type Polaroid : cadre blanc, ombre douce, légende en bas */

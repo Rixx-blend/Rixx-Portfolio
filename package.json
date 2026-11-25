@@ -1,6 +1,6 @@
 {
   "name": "rixx-portfolio",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,14 +8,14 @@
     "start": "next start"
   },
   "dependencies": {
-    "@vercel/blob": "^1.1.1",
-    "next": "^15.0.0",
+    "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@types/node": "20.17.6",
-    "@types/react": "19.3.0",
-    "typescript": "^5.9.3"
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.6.0"
   }
 }

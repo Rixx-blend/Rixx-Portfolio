@@ -1,18 +1,15 @@
-import GalleryFlow from "@/components/GalleryFlow";
-import "@/components/GalleryFlow.css";
-import { getGallery } from "@/lib/gallery";
-
-export const dynamic = "force-dynamic";
-
-export default async function Home() {
-  const { photos } = await getGallery();
+export default function Home() {
   return (
-    <>
-      <GalleryFlow photos={photos} />
-      <section className="gf-contact">
-        <h2>Tu as un projet ?</h2>
-        <p>Parlons-en</p>
-      </section>
-    </>
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "system-ui, sans-serif",
+      }}
+    >
+      <h1>Rixx</h1>
+    </main>
   );
 }

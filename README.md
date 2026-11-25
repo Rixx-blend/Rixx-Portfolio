@@ -1,3 +1,10 @@
 # Rixx Portfolio
 
-Galerie de photographie de rue. Ajoute les photos dans public/photos/ puis renseigne-les dans app/page.tsx.
+Nouveau projet Next.js (App Router), déployé sur Vercel.
+
+## Lancer en local
+
+```bash
+npm install
+npm run dev
+```
